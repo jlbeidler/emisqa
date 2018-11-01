@@ -1,0 +1,13 @@
+! coords --line:  name; type, P-alpha, P-beta, P-gamma, xcent, ycent
+'LAM_40N97W'
+2, 33.0D0, 45.D0,-97.D0,-97.D0, 40.D0
+' '  !  end coords.  grids:  name; xorig,yorig,xcell,ycell,ncols,nrows,nthik
+'36US1_148X112'     ! abbrev. = 36US1
+'LAM_40N97W', -2736.D3, -2088.D3, 36.D3, 36.D3, 148, 112, 1
+'12US1_459X299', ! abbrev.=12US1, common name = Continental 12km grid
+'LAM_40N97W', -2556000.000, -1728000.000, 12.D3, 12.D3, 459, 299, 1
+'12US2', ! 12km continential, slightly smaller than 12US1
+'LAM_40N97W', -2412000.0, -1620000.0, 12000.0, 12000.0, 396, 246, 1
+'US12KM_444X336', ! 12km national US
+'LAM_40N97W', -2736.D3, -2088.D3, 12.D3, 12.D3, 444, 336, 1
+' '  !  end grids.
