@@ -128,11 +128,11 @@ class RunOpts(object):
             print('Use the -l option to list run types or -h for futher options.')
             exit()
         # Handle species list options
-        if not self.species_name and not self.all_species: 
+        if options.species_name == '' and not options.all_species: 
             parser.error('No species specified.  Must either specify the -s or -a option.')
-        if self.species_name and self.all_species: 
+        if options.species_name != '' and options.all_species: 
             parser.error('You must only specify either the -s or the -a option.')
-        self.species_list = self.species_name.split(',')
+        self.species_list = options.species_name.split(',')
 
     def init_run(self): 
         '''
