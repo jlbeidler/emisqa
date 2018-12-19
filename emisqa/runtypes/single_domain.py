@@ -8,7 +8,7 @@ def get_spec(species_name, opts):
     '''
     if opts.region: 
         raise ValueError('This run type does not support grid to fips conversion.  Please remove -e argument from command line.')
-    file1 = DataFile(opts.filename, opts.verbosity, opts.informat, opts.ptsr, opts.zip_dict)
+    file1 = DataFile(opts.file_name, opts.verbosity, opts.informat, opts.ptsr, opts.zip_dict)
     if opts.verbosity: 
         print('Creating domain total for species: %s' %species_name)
     if species_name not in file1.species_list and opts.ignore_spec:
