@@ -16,7 +16,7 @@ def get_spec(species_name, opts):
             print('Creating raw dump for species: %s' %species_name)
         if species_name not in file1.species_list and opts.ignore_spec:
             print('WARNING: The species %s does not exist in the file %s.  Skipping.' %(species_name, file1))
-            DV = 0
+            DV = SpeciesArray(np.zeros([24,opts.grid.NROWS,opts.grid.NCOLS]), species_name)
         else:
             DV = SpeciesArray(file1.dump_val(species_name, opts.all_hours, opts.grid, opts.ignore_spec, 
               opts.inln, opts.interpolate, opts.layer, opts.stacks), opts.species_name)
