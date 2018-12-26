@@ -5,6 +5,7 @@ from emisqa.species_array import SpeciesArray
 from emisqa.dateloop.inday import InDay
 from emisqa.default_paths import *
 import os.path
+import numpy as np
 
 def get_spec(species_name, opts):
     '''
@@ -34,7 +35,7 @@ def get_spec(species_name, opts):
         infile = DataFile(infile_name, opts.verbosity, opts.informat, opts.ptsr, opts.zip_dict)
         if species_name not in infile.species_list and opts.ignore_spec:
             print('WARNING: The species %s does not exist in the file %s.  Skipping.' %(species_name, infile))
-            SUM = 0
+            SUM = SpeciesArray(np.zeros([1,opts.grid.NROWS,opts.grid.NCOLS]), species_name)
             break
         inArray = infile.sum_val(species_name, opts.all_hours, opts.grid, 
           opts.ignore_spec, opts.inln, opts.interpolate, opts.layer, 
