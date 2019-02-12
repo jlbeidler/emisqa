@@ -10,7 +10,6 @@ def get_spec(species_name, opts):
     '''
     file1 = DataFile(opts.file_name, opts.verbosity, opts.informat, opts.ptsr, opts.zip_dict)
     print('Writing Domain...')
-    out_dict = dict()
     for species_name in opts.species_list:
         if opts.verbosity: 
             print('Creating raw dump for species: %s' %species_name)

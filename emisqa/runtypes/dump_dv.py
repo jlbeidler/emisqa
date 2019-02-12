@@ -8,7 +8,6 @@ def get_spec(species_name, opts):
     Dumps all summed column and rows for the day.
     '''
     file1 = DataFile(opts.file_name, opts.verbosity, opts.informat, opts.ptsr, opts.zip_dict)
-    out_dict = dict()
     if opts.verbosity: 
         print('Creating summed dump for species: %s' %species_name)
     if species_name not in file1.species_list and opts.ignore_spec:
