@@ -1,6 +1,6 @@
 from __future__ import print_function
-from emisqa.data_file import DataFile
-from emisqa.species_array import SpeciesArray
+from qamods.data_file import DataFile
+from qamods.species_array import SpeciesArray
 
 def get_spec(species_name, opts):
     '''
