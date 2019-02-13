@@ -24,6 +24,12 @@ def get_spec(species_name, opts):
             continue
         if opts.sector.lower() == 'mrggrid':
             infile_name = os.path.join(in_path, 'emis_mole_all_%s_%s_%s_%s.ncf' %(current_day, otps.grid, opts.spec, opts.case))
+        elif opts.sector.lower() == 'mrggrid_withbeis':
+            infile_name = os.path.join(opts.inpath, 'emis_mole_all_%s_%s_withbeis_%s.ncf' %(current_day, 
+              opts.grid.GDNAM, opts.case))
+        elif opts.sector.lower() == 'mrggrid_nobeis':
+            infile_name = os.path.join(opts.inpath, 'emis_mole_all_%s_%s_nobeis_%s.ncf' %(current_day, 
+              opts.grid.GDNAM, opts.case))
         else:
             infile_name = os.path.join(opts.in_path, opts.sector, 
               '%s_mole_%s_%s_%s_%s.ncf' %(opts.in_prefix, opts.sector, opts.current_day, 

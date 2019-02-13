@@ -185,6 +185,10 @@ class RunOpts(object):
                 sdate = self.gsdate
             if self.sector.lower() == 'mrggrid':
                 self.infile_name = os.path.join(self.inpath, 'emis_mole_all_%s_%s_nobeis_%s.ncf' %(sdate, self.grid_name, self.case))
+            elif self.sector.lower() == 'mrggrid_withbeis':
+                self.infile_name = os.path.join(self.inpath, 'emis_mole_all_%s_%s_withbeis_%s.ncf' %(sdate, self.grid_name, self.case))
+            elif self.sector.lower() == 'mrggrid_nobeis':
+                self.infile_name = os.path.join(self.inpath, 'emis_mole_all_%s_%s_nobeis_%s.ncf' %(sdate, self.grid_name, self.case))
             else:
                self.infile_name = os.path.join(self.inpath, self.sector, 
                   '%s_mole_%s_%s_%s_%s_%s.ncf' %(inprefix, self.sector, sdate, self.grid_name, 

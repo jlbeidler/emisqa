@@ -23,14 +23,20 @@ def get_spec(species_name, opts):
             continue
         # Set the input file name prefix for inline versus 2D
         if opts.inln:
-            inPrefix = 'inln'
+            prefix = 'inln'
         else:
-            inPrefix = 'emis'
+            prefix = 'emis'
         if opts.sector.lower() == 'mrggrid':
             infile_name = os.path.join(opts.inpath, 'emis_mole_all_%s_%s_nobeis_%s.ncf' %(current_day, 
               opts.grid.GDNAM, opts.case))
+        elif opts.sector.lower() == 'mrggrid_withbeis':
+            infile_name = os.path.join(opts.inpath, 'emis_mole_all_%s_%s_withbeis_%s.ncf' %(current_day, 
+              opts.grid.GDNAM, opts.case))
+        elif opts.sector.lower() == 'mrggrid_nobeis':
+            infile_name = os.path.join(opts.inpath, 'emis_mole_all_%s_%s_nobeis_%s.ncf' %(current_day, 
+              opts.grid.GDNAM, opts.case))
         else:
-            infile_name = os.path.join(opts.inpath, opts.sector, '%s_mole_%s_%s_%s_%s_%s.ncf' %(inPrefix, 
+            infile_name = os.path.join(opts.inpath, opts.sector, '%s_mole_%s_%s_%s_%s_%s.ncf' %(prefix, 
               opts.sector, current_day, opts.grid.GDNAM, opts.spec, opts.case))  # v5 directory structure 
         infile = DataFile(infile_name, opts.verbosity, opts.informat, opts.ptsr, opts.zip_dict)
         if species_name not in infile.species_list and opts.ignore_spec:
