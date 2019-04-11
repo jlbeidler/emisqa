@@ -1,19 +1,10 @@
-from __future__ import division
-from __future__ import print_function
-from builtins import chr
-from builtins import str
-from builtins import range
-from builtins import object
 import numpy as np
 import gzip, random
 import os.path
 from emisqa.default_paths import tmp_dir
 from emisqa.helpers import data_blocks
 
-### FUTURE UPDATES - USE STRUCT GETSIZE TO GET OFFSET SIZES
-
 class CAMxFile(object):
-
     def __init__(self, infile, verbosity, ptsr, zip_dict):
         self.verbosity = verbosity
         self.infile_name = infile
@@ -100,7 +91,7 @@ class CAMxFile(object):
         str_out=''
         for i in int_list:
             try:
-                str_out += chr(old_div(((old_div(((old_div((i-32),256))-32),256))-32),256))
+                str_out += chr(int(int((int((int((i-32)/256)-32)/256)-32)/256))
             except ValueError:
                 print('Warning: Could not convert binary data to string: %s' %i)
         return str_out
@@ -115,7 +106,8 @@ class CAMxFile(object):
         stack_data = np.fromfile(self.camx, np.dtype([('x','>f'),('y','>f'),('col','>i'),('row','>i'),('h','>f'),('dia','>f')]), count = self.stacks)
         self.camx_headlen += 6 * self.stacks
         for stack in range(self.stacks):
-            self.stack_list.append({'col': int(abs(old_div((stack_data[stack]['x'] - self.xorig), self.cell))), 'row': int(abs(old_div((stack_data[stack]['y'] - self.yorig), self.cell)))})
+            self.stack_list.append({'col': int(abs((stack_data[stack]['x'] - self.xorig)/self.cell)), 
+                                    'row': int(abs((stack_data[stack]['y'] - self.yorig)/self.cell))})
 
     def get_species(self, species_name, ptsr):
         if ptsr:
