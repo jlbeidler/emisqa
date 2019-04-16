@@ -94,9 +94,9 @@ class DataFile(object):
         else:
             layers = slice(0,species.shape[1])
         if interpolate:
-            data[:] += np.sum(species[slice(0,hours),layers,:], axis=0) * 0.5 + np.sum(species[slice(1,hours + 1),layers,:], axis=0) * 0.5
+            data[:] += np.sum(species[slice(0,hours),layers,:], axis=(0,1)) * 0.5 + np.sum(species[slice(1,hours + 1),layers,:], axis=(0,1)) * 0.5
         else:
-            data[:] += np.sum(species[slice(0,hours),layers,:], axis=0)
+            data[:] += np.sum(species[slice(0,hours),layers,:], axis=(0,1))
         return data
 
     def close_file(self):
