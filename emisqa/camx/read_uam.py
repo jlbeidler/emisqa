@@ -91,7 +91,7 @@ class CAMxFile(object):
         str_out=''
         for i in int_list:
             try:
-                str_out += chr(int(int((int((int((i-32)/256)-32)/256)-32)/256))
+                str_out += chr(int(int((int((int((i-32)/256)-32)/256)-32)/256)))
             except ValueError:
                 print('Warning: Could not convert binary data to string: %s' %i)
         return str_out

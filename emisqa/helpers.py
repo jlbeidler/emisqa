@@ -1,4 +1,5 @@
 from __future__ import division
+from past.utils import old_div
 from builtins import str
 from builtins import zip
 from builtins import range
@@ -85,7 +86,7 @@ def parse_ratio(region, grid, srg_file):
         ratio_table = {}    
         for line in infile:
             line = [cell.strip() for cell in line.split('\t') if cell and cell != '!']
-            if line[0].startswith('#'): 
+            if line[0].startswith('#') or line.strip() == '': 
                 if line[0].strip() == '#GRID':
                     # Calculate grid cell offset from surrogate grid and cell range for our grid
                     xorig = float(line[2])
@@ -100,13 +101,11 @@ def parse_ratio(region, grid, srg_file):
                     fips = row_dict['fips'][:2]
                 elif region == 'county': 
                     fips = row_dict['fips']
-
                 # Check to see if the surrogate grid col and row is within the range of our grid
                 if int(row_dict['col'])in col_range and int(row_dict['row']) in row_range:
                     # Offset the columns and rows.
                     col = int(row_dict['col']) - col_offset
                     row = int(row_dict['row']) - row_offset
-
                     cell = '%s,%s' %(col - 1, row - 1)
                     ratio = old_div(float(row_dict['cellarea']), (cell_size * cell_size))
                     ratio_table.setdefault(fips, {})
