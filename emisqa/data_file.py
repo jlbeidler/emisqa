@@ -36,7 +36,7 @@ class DataFile(object):
         if informat == 'NCF':
             species = self.infile.get_species(species_name, grid, ignore_spec, inln, stacks)
         else:
-            species = self.infile.get_species(species_name, ptsr)
+            species = self.infile.get_species(species_name, ptsr, ignore_spec, inln, stacks)
         return species
 
     def dump_val(self, species_name, all_hours=False, grid='', ignore_spec=False, inln=False, interpolate=False, layer='', stacks=''):

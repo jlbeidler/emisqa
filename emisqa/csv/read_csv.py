@@ -102,7 +102,6 @@ class CSVFile(object):
                             print('WARNING: Hour %s on line %s outside of hours maximum as defined in header.' %(hour+1, ln+1))
                         species = line[3]
                         self.spec_dict.setdefault(species, np.zeros([self.hours, 1, self.rows, self.cols], '>f'))
-
                         # Put the values in species dictionary of numpy arrays
                         try:
                             val = float(line[4])

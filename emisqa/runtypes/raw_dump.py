@@ -19,5 +19,5 @@ def get_spec(species_name, opts):
         else:
             DV = SpeciesArray(file1.dump_val(species_name, opts.all_hours, opts.grid, opts.ignore_spec, 
               opts.inln, opts.interpolate, opts.layer, opts.stacks), opts.species_name)
-        return (species_name, DV)
+    return (species_name, DV)
 
