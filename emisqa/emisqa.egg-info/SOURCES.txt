@@ -1,7 +1,0 @@
-README.md
-setup.py
-src/emisqa.py
-src/emisqa/emisqa.egg-info/PKG-INFO
-src/emisqa/emisqa.egg-info/SOURCES.txt
-src/emisqa/emisqa.egg-info/dependency_links.txt
-src/emisqa/emisqa.egg-info/top_level.txt

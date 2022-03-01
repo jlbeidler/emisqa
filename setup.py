@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 setup(
     name="emisqa",
-    version="0.1.4",
+    version="0.1.5",
     packages=find_packages(),
     scripts = ['bin/emisqa',],
     package_data = {'emisqa': ['ancillary/*','ancillary/2016/*']}, 
