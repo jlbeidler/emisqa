@@ -4,7 +4,7 @@ from builtins import range
 from builtins import object
 import numpy as np
 from datetime import date, datetime, timedelta
-from emisqa.helpers import conv2jul, parse_ratio
+from emisqa.helpers import conv2jul, RatioTable
 import emisqa.io.fauxio as io
 
 class DataOut(object):
@@ -57,12 +57,13 @@ class DataOut(object):
         '''
         Writes the dictionary to an output file in csv format by grid cell.  Takes output dictionary and the species_list.
         '''
-        if out_dict[species_list[0]]().shape[0] == 1:
+        hours = out_dict[species_list[0]]().shape[0]
+        if hours == 1:
             hour_type = 'sum'
         else:
             hour_type = 'hourly' 
         self.outfile.write('hour,row,col,' + ','.join(species_name for species_name in species_list) + '\n')
-        for hour in range(out_dict[species_list[0]]().shape[0]):
+        for hour in range(hours):
             if hour_type == 'sum':
                 out_hour = 'sum'
             else:
@@ -71,10 +72,10 @@ class DataOut(object):
                 srow = str(row)
                 for col in range(out_dict[species_list[0]]().shape[2]):
                     scol = str(col) 
-                    out_line = '%s,%s,%s' %(out_hour, row + 1, col + 1)
+                    outline = '%s,%s,%s' %(out_hour, row + 1, col + 1)
                     for species_name in species_list:
-                        out_line = '%s,%s' %(out_line, out_dict[species_name]()[hour,row,col])
-                    self.outfile.write(out_line + '\n')
+                        outline = '%s,%s' %(outline, out_dict[species_name]()[hour,row,col])
+                    self.outfile.write(outline + '\n')
 
     def _write_FIPS_CSV(self, out_dict, species_list, grid, tons, region, srg_file):
         '''
@@ -82,30 +83,53 @@ class DataOut(object):
         '''
         if not grid: 
             raise ValueError('No grid specified.  Grid needed to write state or county based csv.')
+        import pandas as pd
+        ratio_table = RatioTable()
+        ratio_table.parse_ratio(region, grid, srg_file)
+        hours = out_dict[species_list[0]]().shape[0]
+        df = pd.DataFrame()
+        for n, fips in enumerate(ratio_table.fips):
+            fipsdf = pd.DataFrame()
+            factors = np.tile(ratio_table.arr[n,:], (hours,1,1))
+            for species_name in species_list:
+                vals = pd.DataFrame((out_dict[species_name]() * factors).sum(axis=(1,2)), 
+                  columns=[species_name,]) 
+                vals['hour'] = vals.index 
+                vals['fips'] = fips
+                if len(fipsdf) == 0:
+                    fipsdf = vals
+                else:
+                    fipsdf = pd.concat((fipsdf, vals[species_name]), axis=1)
+            df = pd.concat((df, fipsdf))
+        cols = ['hour','fips'] + species_list
+        df.to_csv(self.outfile, columns=cols, index=False)
+
+    def _awrite_FIPS_CSV(self, out_dict, species_list, grid, tons, region, srg_file):
+        '''
+        Writes the dictionary to an output file in csv format by fips.  Takes output dictionary and the species_list.
+        '''
+        if not grid: 
+            raise ValueError('No grid specified.  Grid needed to write state or county based csv.')
+        import pandas as pd
         ratio_table = parse_ratio(region, grid, srg_file)
-        self.outfile.write('hour,fips,' + ','.join(species_name for species_name in species_list) + '\n')
         fips_list = sorted(ratio_table.keys())
-        if out_dict[species_list[0]]().shape[0] == 1:
-            hour_type = 'sum'
-        else:
-            hour_type = 'hourly' 
-        for hour in range(out_dict[species_list[0]]().shape[0]):
-            if hour_type == 'sum':
-                out_hour = 'sum'
-            else:
-                out_hour = hour
-            for fips in fips_list:
-                out_line = '%s,%s' %(out_hour, fips)
-                line_dict = dict((species_name,float(0)) for species_name in species_list)
-                for species_name in species_list:
-                    for cell in ratio_table[fips]:
-                        col = int(cell.split(',')[0])
-                        row = int(cell.split(',')[1])
-                        if row > grid.NROWS or col > grid.NCOLS:
-                            continue  # Skip ratios that are outside the domain
-                        line_dict[species_name] = line_dict[species_name] + (out_dict[species_name]()[hour,row - 1,col - 1] * ratio_table[fips][cell])
-                    out_line = '%s,%s' %(out_line, line_dict[species_name])
-                self.outfile.write(out_line + '\n') 
+        hours = out_dict[species_list[0]]().shape[0]
+        df = pd.DataFrame()
+        for fips in fips_list:
+            fipsdf = pd.DataFrame()
+            factors = np.tile(ratio_table[fips][:], (hours,1,1))
+            for species_name in species_list:
+                vals = pd.DataFrame((out_dict[species_name]()[:] * factors).sum(axis=(1,2)), 
+                  columns=[species_name,]) 
+                vals['hour'] = vals.index 
+                vals['fips'] = fips
+                if len(fipsdf) == 0:
+                    fipsdf = vals
+                else:
+                    fipsdf = pd.concat((fipsdf, vals[species_name]), axis=1)
+            df = pd.concat((df, fipsdf))
+        cols = ['hour','fips'] + species_list
+        df.to_csv(self.outfile, columns=cols, index=False)
 
     def _open_NCF(self):
         '''
