@@ -94,6 +94,7 @@ class RatioTable():
         """
         with open(srg_file) as infile:
             cell_size = grid.XCELL
+            cell_area = cell_size * cell_size
             ratio_table = {}    
             for line in infile:
                 line = [cell.strip() for cell in line.split('\t') if cell and cell != '!']
@@ -111,7 +112,7 @@ class RatioTable():
                     row_dict = dict(list(zip(cols, line)))
                     if region == 'state': 
                         fips = row_dict['fips'][:2]
-                    elif region == 'county': 
+                    elif region in ('county','countyavg'): 
                         fips = row_dict['fips']
                     # Check to see if the surrogate grid col and row is within the range of our grid
                     if int(row_dict['col']) in col_range and int(row_dict['row']) in row_range:
@@ -120,7 +121,11 @@ class RatioTable():
                         col = int(row_dict['col']) - col_offset - 1
                         row = int(row_dict['row']) - row_offset - 1
                         if col in range(grid.NCOLS) and row in range(grid.NROWS):
-                            ratio = old_div(float(row_dict['cellarea']), (cell_size * cell_size))
+                            if region == 'countyavg':
+                                divisor = float(row_dict['ctyarea'].strip())
+                            else:
+                                divisor = cell_area
+                            ratio = old_div(float(row_dict['cellarea']), divisor)
                             ratio_table[fips][row,col] = ratio
         self.fips = sorted(ratio_table.keys())
         self.arr = np.zeros([len(self.fips), grid.NROWS, grid.NCOLS], 'f')

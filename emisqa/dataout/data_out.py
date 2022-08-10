@@ -40,7 +40,7 @@ class DataOut(object):
         if self.out_type == 'NCF':
             self._write_NCF(out_dict, self.species_list, grid, tons, units)
         elif self.out_type == 'CSV':
-            if region == 'state' or region == 'county':
+            if region in ('state','county','countyavg'):
                 self._write_FIPS_CSV(out_dict, self.species_list, grid, tons, region, srg_file)
             else: 
                 self._write_grid_CSV(out_dict, self.species_list, tons)
@@ -93,33 +93,6 @@ class DataOut(object):
             factors = np.tile(ratio_table.arr[n,:], (hours,1,1))
             for species_name in species_list:
                 vals = pd.DataFrame((out_dict[species_name]() * factors).sum(axis=(1,2)), 
-                  columns=[species_name,]) 
-                vals['hour'] = vals.index 
-                vals['fips'] = fips
-                if len(fipsdf) == 0:
-                    fipsdf = vals
-                else:
-                    fipsdf = pd.concat((fipsdf, vals[species_name]), axis=1)
-            df = pd.concat((df, fipsdf))
-        cols = ['hour','fips'] + species_list
-        df.to_csv(self.outfile, columns=cols, index=False)
-
-    def _awrite_FIPS_CSV(self, out_dict, species_list, grid, tons, region, srg_file):
-        '''
-        Writes the dictionary to an output file in csv format by fips.  Takes output dictionary and the species_list.
-        '''
-        if not grid: 
-            raise ValueError('No grid specified.  Grid needed to write state or county based csv.')
-        import pandas as pd
-        ratio_table = parse_ratio(region, grid, srg_file)
-        fips_list = sorted(ratio_table.keys())
-        hours = out_dict[species_list[0]]().shape[0]
-        df = pd.DataFrame()
-        for fips in fips_list:
-            fipsdf = pd.DataFrame()
-            factors = np.tile(ratio_table[fips][:], (hours,1,1))
-            for species_name in species_list:
-                vals = pd.DataFrame((out_dict[species_name]()[:] * factors).sum(axis=(1,2)), 
                   columns=[species_name,]) 
                 vals['hour'] = vals.index 
                 vals['fips'] = fips
