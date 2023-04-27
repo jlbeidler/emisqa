@@ -7,7 +7,7 @@ from emisqa.dateloop import inday as dl
 from emisqa.inline.stack_group import StkGrp
 import os.path
 from sys import exit
-from emisqa.io.fauxio import Grid
+from fauxioapi import Grid
 
 ### Main
 
