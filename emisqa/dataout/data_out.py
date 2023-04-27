@@ -5,7 +5,7 @@ from builtins import object
 import numpy as np
 from datetime import date, datetime, timedelta
 from emisqa.helpers import conv2jul, RatioTable
-import emisqa.io.fauxio as io
+import fauxioapi as io
 
 class DataOut(object):
     """
