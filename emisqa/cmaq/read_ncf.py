@@ -6,7 +6,7 @@ import netCDF4 as ncf
 import gzip, random
 from emisqa.helpers import data_blocks
 from emisqa.default_paths import tmp_dir
-from emisqa.io.fauxio import Grid
+from fauxioapi import Grid
 import os.path
 
 # Subclass to Fauxio
