@@ -3,8 +3,10 @@ from builtins import str
 from builtins import range
 from builtins import object
 import numpy as np
+import pandas as pd
 from datetime import date, datetime, timedelta
-from emisqa.helpers import conv2jul, RatioTable
+from emisqa.helpers import conv2jul
+from emisqa.surrogates import Surrogate
 import fauxioapi as io
 
 class DataOut(object):
@@ -83,14 +85,13 @@ class DataOut(object):
         '''
         if not grid: 
             raise ValueError('No grid specified.  Grid needed to write state or county based csv.')
-        import pandas as pd
-        ratio_table = RatioTable()
-        ratio_table.parse_ratio(region, grid, srg_file)
+        surg = Surrogate(grid)
+        surg.calc_fracs(region, srg_file)
         hours = out_dict[species_list[0]]().shape[0]
         df = pd.DataFrame()
-        for n, fips in enumerate(ratio_table.fips):
+        for n, fips in enumerate(surg.fips):
             fipsdf = pd.DataFrame()
-            factors = np.tile(ratio_table.arr[n,:], (hours,1,1))
+            factors = np.tile(surg.arr.data[n,:], (hours,1,1))
             for species_name in species_list:
                 vals = pd.DataFrame((out_dict[species_name]() * factors).sum(axis=(1,2)), 
                   columns=[species_name,]) 
@@ -135,13 +136,13 @@ class DataOut(object):
         """
         if not units:
             if tons:
-                units = 'tons/day'
+                units = 'tons/day'.ljust(80)
             else:
-                units = 'moles/s'
+                units = 'moles/s'.ljust(80)
         if not long_name: 
-            long_name = species_name
+            long_name = species_name.ljust(80)
         if not var_desc: 
-            var_desc = 'Model species ' + species_name
+            var_desc = f'Model species {species_name}'.ljust(80)
         d_shape = [out_dict[species_name]().shape[0],1,out_dict[species_name]().shape[1],out_dict[species_name]().shape[2]]
         species_out = self.outfile.create_variable(species_name, 'REAL', ('TSTEP','LAY','ROW','COL'), 
           long_name=long_name, units=units, var_desc=var_desc)
@@ -163,5 +164,5 @@ class DataOut(object):
         else:
             hstep = 240000
         esdate = conv2jul(self.gsdate)
-        self.outfile.set_attributes(esdate, grid, FILEDESC='EMISQA'.ljust(80), TSTEP=hstep)
+        self.outfile.set_attributes(esdate, grid, FILEDESC='EQA'.ljust(80), TSTEP=hstep)
 

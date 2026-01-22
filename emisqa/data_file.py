@@ -64,8 +64,8 @@ class DataFile(object):
             hours = 24
         data = np.zeros([hours, species.shape[-2], species.shape[-1]], '>f4')
         if layer:
-            layers = slice(int(layer) - 1,int(layer))
-            if layer not in list(range(species.shape[1])): 
+            layers = slice(int(layer)-1,int(layer))
+            if int(layer) not in range(species.shape[1]+1): 
                 raise IndexError('The specified layer is out of range.')
         else:
             layers = slice(0,species.shape[1])
@@ -88,8 +88,8 @@ class DataFile(object):
             hours = 24
         data = np.zeros([1, species.shape[-2], species.shape[-1]], '>f4')
         if layer:
-            layers = slice(int(layer) - 1,int(layer))
-            if layer not in list(range(species.shape[1])): 
+            layers = slice(int(layer)-1,int(layer))
+            if layer not in list(range(species.shape[1]+1)): 
                 raise IndexError('The specified layer is out of range.')
         else:
             layers = slice(0,species.shape[1])

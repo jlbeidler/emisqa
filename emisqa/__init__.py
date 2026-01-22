@@ -20,3 +20,4 @@ import emisqa.run_select
 import emisqa.runtypes
 import emisqa.chem_mechs
 import emisqa.csv
+import emisqa.surrogates

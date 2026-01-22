@@ -109,7 +109,7 @@ class CAMxFile(object):
             self.stack_list.append({'col': int(abs((stack_data[stack]['x'] - self.xorig)/self.cell)), 
                                     'row': int(abs((stack_data[stack]['y'] - self.yorig)/self.cell))})
 
-    def get_species(self, species_name, ptsr):
+    def get_species(self, species_name, ptsr, ignore_spec, inln, stacks):
         if ptsr:
             species = self.get_ptsrspecies(species_name)
         else:

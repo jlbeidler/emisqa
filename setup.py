@@ -1,7 +1,7 @@
 from distutils.core import setup
 setup(
     name="emisqa",
-    version="0.3.1",
+    version="0.3.2",
     packages=['emisqa','emisqa.camx','emisqa.cmaq','emisqa.csv','emisqa.dataout','emisqa.dateloop','emisqa.inline','emisqa.runtypes'],
     scripts = ['bin/emisqa',],
     package_data = {'emisqa': ['ancillary/*','ancillary/2016/*']}, 

@@ -1,7 +1,3 @@
-from __future__ import division
-from __future__ import print_function
-from past.utils import old_div
-from builtins import object
 import numpy as np
 from emisqa.chem_mechs import *
 
@@ -39,7 +35,6 @@ class SpeciesArray(object):
         """
         if inarray.shape != self.array.shape:
             raise IndexError('Array size mismatch in percent error calculation')
-
         outarray = (inarray - self.array)
         outarray = np.where(outarray != outarray, 0.0, outarray)
         outarray = np.where(outarray > 1e10, 0.0, outarray)

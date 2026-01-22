@@ -1,10 +1,12 @@
 from __future__ import print_function
 from builtins import str
 from builtins import object
-import numpy as np
-import gzip, random
-from emisqa.helpers import data_blocks, conv2jul
 import os.path
+import gzip, random
+import numpy as np
+import scipy.sparse
+import pandas as pd
+from emisqa.helpers import data_blocks, conv2jul
 from emisqa.default_paths import tmp_dir
 
 class CSVFile(object):
@@ -83,6 +85,42 @@ class CSVFile(object):
                     if line[0] in ('COLS','ROWS','HOURS','GSDATE','UNITS'):
                         setattr(self, line[0].lower(), self._check_int(line[1], line[0]))
                 else:
+                    break
+        if self.cols == 0 or self.rows == 0 or self.hours == 0 or not self.gsdate:
+            raise ValueError('Must set file header with lines of #COLS, #ROWS, #HOURS, #GSDATE.')
+        dtype = {'col': int, 'row': int, 'hour': int, 'speciesname': str}
+        df = pd.read_csv(infile, dtype=dtype, comment='#')
+        # Start col, row, and hours from 0. Check that they are within the bounds.
+        for col in ['col','row','hour']:
+            df[col] = df[col] - 1
+            idx = ((df[col] < 0) | (df[col] >= getattr(self, '%ss' %col)))
+            if len(df[idx]) > 0:
+                print('WARNING: Dropping %ss outside of specified bounds' %col)
+                df = df[~ idx].copy()
+        # Drop duplicate records
+        idx = df.duplicated(['hour','row','col','speciesname'], keep=False)
+        if len(df[idx]) > 0:
+            print('WARNING: Duplicate records by hour, row, and column. Keeping first entry')
+            print(df[idx])
+            df.drop_duplicates(['hour','row','col','speciesname'], keep='first', inplace=True)
+        self.species_list = list(df['speciesname'].drop_duplicates())
+        for species in self.species_list:
+            self.spec_dict.setdefault(species, np.zeros([self.hours, 1, self.rows, self.cols], 'f'))
+            for hour in range(self.hours):
+                spec_hour = df[(df['hour'] == hour) & (df['speciesname'] == species)]
+                self.spec_dict[species][hour,0,:] = scipy.sparse.coo_matrix((spec_hour.value, 
+                  (spec_hour.row, spec_hour.col)), shape=(self.rows, self.cols)).toarray()
+    '''
+    def _read_data(self, infile):
+        Read in the formatted CSV file
+        with open(infile,'r') as csvfile:
+            for ln, line in enumerate(csvfile):
+                # Read the meta data headers: #COLS, #ROWS, #HOURS, #GSDATE, #UNITS
+                if line.startswith('#'):
+                    line = [cell.strip().upper() for cell in line.strip('#').strip().split(' ')]
+                    if line[0] in ('COLS','ROWS','HOURS','GSDATE','UNITS'):
+                        setattr(self, line[0].lower(), self._check_int(line[1], line[0]))
+                else:
                     line = [cell.strip().upper() for cell in line.strip().split(',')]
                     if self.cols == 0 or self.rows == 0 or self.hours == 0 or not self.gsdate:
                         raise ValueError('Must set file header with lines of #COLS, #ROWS, #HOURS, #GSDATE.')
@@ -115,6 +153,7 @@ class CSVFile(object):
                                 print(line)
                                 raise ValueError('Check for additional entry for column, row, hour, and species.')
         self.species_list = list(self.spec_dict.keys())
+    '''
 
     def open_CSV(self, zip_dict):
         '''
